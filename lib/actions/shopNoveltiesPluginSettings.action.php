@@ -16,7 +16,7 @@ class shopNoveltiesPluginSettingsAction extends waViewAction
         } else {
             $template_path = wa()->getAppPath($this->tmp_path,  'shop');
         }
-        $template = file_get_contents($template_path);
+        $template = file_get_contents($template_path);     
         $this->view->assign('settings', $settings);
         $this->view->assign('template', $template);
         $this->view->assign('change_tpl', $change_tpl);

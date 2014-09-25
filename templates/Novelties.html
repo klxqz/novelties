@@ -1,39 +1,64 @@
+{if $settings.use_slider}
+    <script type="text/javascript" src="{$wa_app_static_url}plugins/novelties/js/bxslider/jquery.bxslider.min.js"></script>
+    <link rel="stylesheet" href="{$wa_app_static_url}plugins/novelties/js/bxslider/jquery.bxslider.css" />
+{/if}
 {literal}
-<style type="text/css">
-    .noveltiesproducts ul{padding: 0px;}
-    .noveltiesproducts_title{text-align: center;font-weight: bold;margin: 10px 0px;}
-    .noveltiesproducts ul li{list-style: none;margin-bottom: 20px;}
-    .noveltiesproducts_img{text-align: center;}
-    .noveltiesproducts_name{text-align: center;}
-    .product-price{text-align: center;}
-    .noveltiesproducts_link{text-align: center;}
-</style>
+    <style type="text/css">
+        .noveltiesproducts ul{padding: 0px;}
+        .noveltiesproducts_title{text-align: center;font-weight: bold;margin: 10px 0px;}
+        .noveltiesproducts ul li{list-style: none;margin-bottom: 20px; text-align: center;}
+        .noveltiesproducts ul li img{margin: 0 auto;}
+        .noveltiesproducts .compare-at-price{text-decoration: line-through;}
+        .noveltiesproducts .price{font-weight: bold;}
+        .noveltiesproducts .bx-wrapper .bx-viewport{border: none; box-shadow: none;}
+    </style>
 {/literal}
 {if $novelties_products}
     <div class="noveltiesproducts">
-    <div class="noveltiesproducts_title">Новинки</div>
-    <ul>
-    {foreach from=$novelties_products item=product}
-        <li>
-        <div class="noveltiesproducts_img">
-        <a href="{$wa->shop->productUrl($product)}">
-        {$wa->shop->productImgHtml($product, '100x100', ['itemprop' => 'image', 'alt' => $product.name])}  
-        </a>
-        </div>
-        <div class="noveltiesproducts_name">
-        <a href="{$product.frontend_url}">
-            <span itemprop="name">{$product.name|truncate:60}</span>
-        </a>
-        </div>
-        <div class="product-price">
-        {if $product.compare_price>$product.price}<span class="compare-at-price nowrap">{shop_currency($product.compare_price)}</span>{/if}
-        <span class="price nowrap" itemprop="price">{shop_currency($product.price)}</span>
-        </div>
-        </li>
-    {/foreach}
-    </ul>
+        <div class="noveltiesproducts_title">Новинки</div>
+        <ul>
+            {foreach from=$novelties_products item=p}
+                <li itemscope itemtype ="http://schema.org/Product">
+                    <div class="image">
+                        <a href="{$p.frontend_url}" title="{$p.name}{if $p.summary} &mdash; {strip_tags($p.summary)}{/if}">
+                            {$badge_html = $wa->shop->badgeHtml($p.badge)}
+                            {if $badge_html}
+                                <div class="corner top right">{$badge_html}</div>
+                            {/if}
+                            {$wa->shop->productImgHtml($p, $settings.img_size, ['itemprop' => 'image', 'alt' => $p.name])}
+                            <h5 itemprop="name">
+                                {$p.name}
+                            </h5>
+                            {if $p.rating > 0}
+                                <span class="rating nowrap">{$wa->shop->ratingHtml($p.rating)}</span>
+                            {/if}
+                        </a>
+                    </div><br>
+
+                    {if $p.summary}<p itemprop="description">{$p.summary|truncate:255}</p>{/if}
+
+                    <div itemprop="offers" class="offers" itemscope itemtype="http://schema.org/Offer">
+                        {if $p.compare_price > 0}<span class="compare-at-price nowrap"> {shop_currency_html($p.compare_price)} </span>{/if}
+                        <span class="price nowrap" itemprop="price">{shop_currency_html($p.price)}</span>
+                    </div>
+                </li>
+            {/foreach}
+        </ul>
     </div>
     <div class="noveltiesproducts_link">
         <a  href="{$wa->getUrl('shop/frontend/novelties')}">Все товары</a>
     </div>
+{/if}
+{if $settings.use_slider}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.noveltiesproducts ul').bxSlider({
+                minSlides: 1,
+                maxSlides: 1,
+                slideMargin: 10,
+                moveSlides: 1,
+                pager: false
+            });
+        });
+    </script>
 {/if}

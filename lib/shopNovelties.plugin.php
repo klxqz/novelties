@@ -13,21 +13,21 @@ class shopNoveltiesPlugin extends shopPlugin {
         $tmp_path = 'plugins/novelties/templates/Novelties.html';
 
         $app_settings_model = new waAppSettingsModel();
-        $status = $app_settings_model->get($plugin_id, 'status');
+        $settings = $app_settings_model->get($plugin_id);
 
-        if (!$status) {
+        if (!$settings['status']) {
             return;
         }
 
-        $count = $app_settings_model->get($plugin_id, 'count');
+        $count = $settings['count'];
 
-        $days = $app_settings_model->get($plugin_id, 'days');
         $collection = new shopNoveltiesProductsCollection();
-        $collection->noveltiesFilter($days, true);
+        $collection->noveltiesFilter($settings, true);
         $products = $collection->getProducts('*', 0, $count);
 
         $view = wa()->getView();
 
+        $view->assign('settings', $settings);
         $view->assign('novelties_products', $products);
 
         $template_path = wa()->getDataPath($tmp_path, false, 'shop', true);
@@ -37,6 +37,13 @@ class shopNoveltiesPlugin extends shopPlugin {
 
         $html = $view->fetch($template_path);
         return $html;
+    }
+
+    public function routing($param) {
+
+        return array(
+            $this->getSettings('page_url') => 'frontend/novelties'
+        );
     }
 
 }
