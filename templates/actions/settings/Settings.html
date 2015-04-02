@@ -7,20 +7,60 @@
         overflow-y: hidden;
         overflow-x: auto;
     }
+    .plugin-menu{
+        float: right;
+        list-style: none;
+    }
+
+    .plugin-menu li{
+        float: left;
+        margin-left: 10px;
+    }
+
+    div.geshifilter {
+        background-color: #f8f8f8;
+        border: 1px solid #ccc;
+        color: #222;
+        display: block;
+        line-height: 1.3;
+        margin: 0.5em;
+        overflow: auto;
+        padding: 0.5em;
+    }
 </style>
 <h1>Новинки</h1>
-<div     class="fields form">
+
+
+<ul class="plugin-menu">
+    <li><a target="_blank" href="http://www.webasyst.ru/store/plugin/shop/novelties/reviews/">Оставить отзыв о плагине</a></li>
+    <li><a href="mailto:support@wa-plugins.ru">Поддержка разработчика плагина</a></li>
+    <li><a target="_blank" href="http://wa-plugins.ru/">WA-PLUGINS.ru - сайт разработчика</a></li>
+</ul>
+
+
+<div class="fields form">
     <form action="?plugin=novelties&action=save" method="post" id="plugins-settings-form">
         {$wa->csrf()}
 
 
         {literal}
-            <p>{shopNoveltiesPlugin::display()} - Код хелпера вывода</p>
+            <p><b>{shopNoveltiesPlugin::display()}</b> - Код хелпера вывода</p>
+            <p class="gray">
+                <i class="icon16 exclamation"></i>
+                Используя этот код Вы можете осуществить вывод "Новинок" в любом месте вашей темы оформления, это позволяет избавиться от привязки к конкретным местам вывода плагина
+            </p>
+
+            <p><b>{shopNoveltiesPlugin::products($count)}</b> - получение списка товаров-новинок, где $count - максимальное количество возращаемых товаров
+                <br/>
+                Код для вывода товаров-новинок с использованием стандартного шаблона list-thumbs.html:
+            </p>
+            <div class="geshifilter">
+                <pre>{include file="list-thumbs.html" products=shopNoveltiesPlugin::products(5)}</pre>
+            </div>
+
+
         {/literal}
-        <p class="gray">
-            <i class="icon16 exclamation"></i>
-            Используя этот код Вы можете осуществить вывод "Новинок" в любом месте вашей темы оформления, это позволяет избавиться от привязки к конкретным местам вывода плагина
-        </p>
+
 
         <div class="field">
             <div class="name">
@@ -167,24 +207,24 @@
     </form>
 </div>
 <script type="text/javascript">
-    $(function() {
+    $(function () {
         var c = CodeMirror.fromTextArea(document.getElementById('sf-template'), {
             mode: "text/html",
             tabMode: "indent",
             height: "dynamic",
             lineWrapping: true
         });
-        $("#sf-template").change(function() {
+        $("#sf-template").change(function () {
             c.setValue($(this).val())
         });
-        $("#sf-settings").submit(function() {
+        $("#sf-settings").submit(function () {
             var f = $(this);
-            $.post(f.attr('action'), f.serialize(), function(response) {
+            $.post(f.attr('action'), f.serialize(), function (response) {
                 if (response.status == 'ok') {
                     $('#wa-design-button').removeClass('red').addClass('green');
                     $("#wa-editor-status-fail").hide()
                     $("#wa-editor-status-ok span").html(response.data.message);
-                    $("#wa-editor-status-ok").fadeIn('slow', function() {
+                    $("#wa-editor-status-ok").fadeIn('slow', function () {
                         $(this).fadeOut(1000);
                     });
                 } else {

@@ -2,18 +2,29 @@
 
 class shopNoveltiesPlugin extends shopPlugin {
 
+    public static $plugin_id = array('shop', 'novelties');
+
     public function frontendNav() {
         if ($this->getSettings('default_output')) {
             return self::display();
         }
     }
 
+    public static function products($count = null) {
+        $app_settings_model = new waAppSettingsModel();
+        $settings = $app_settings_model->get(self::$plugin_id);
+
+        $collection = new shopNoveltiesProductsCollection();
+        $collection->noveltiesFilter($settings, true);
+        $products = $collection->getProducts('*', 0, $count);
+        return $products;
+    }
+
     public static function display() {
-        $plugin_id = array('shop', 'novelties');
         $tmp_path = 'plugins/novelties/templates/Novelties.html';
 
         $app_settings_model = new waAppSettingsModel();
-        $settings = $app_settings_model->get($plugin_id);
+        $settings = $app_settings_model->get(self::$plugin_id);
 
         if (!$settings['status']) {
             return;
@@ -39,7 +50,7 @@ class shopNoveltiesPlugin extends shopPlugin {
         return $html;
     }
 
-    public function routing($param) {
+    public function routing($route = array()) {
 
         return array(
             $this->getSettings('page_url') => 'frontend/novelties'
